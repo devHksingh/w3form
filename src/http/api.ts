@@ -20,7 +20,7 @@ const api = axios.create({
 
 
 const postForm = async (data: Formsprop) => {
-    // 0705b402-49b2-4c29-9e02-aa8ad746f353
+    
 
 
     const res = await api.post('',data)
