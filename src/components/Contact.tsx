@@ -1,21 +1,21 @@
-// import { ChevronDownIcon, UserCircleIcon } from "lucide-react";
-// 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { postForm } from "../http/api";
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer, toast } from "react-toastify";
 import type { AxiosError } from "axios";
+import { ChevronDownIcon } from "lucide-react";
 
 export interface FormsProps {
   firstName: string;
   lastName: string;
   email: string;
   message: string;
+  country: "United States" | "Canada" | "Mexico";
 }
-interface ErrorResponse{
-  message:string
+interface ErrorResponse {
+  message: string;
 }
 
 const schema = z.object({
@@ -23,22 +23,25 @@ const schema = z.object({
   lastName: z.string().min(1, "last name is required"),
   email: z.string().email(),
   message: z.string().min(1, "message name is required"),
+  country: z.enum(["United States", "Canada", "Mexico"], {
+    errorMap: () => ({ message: "Country is required" }),
+  }),
 });
 const Contact = () => {
   const mutation = useMutation({
-    mutationFn:postForm,
-    onSuccess:(data)=>{
+    mutationFn: postForm,
+    onSuccess: (data) => {
       console.log(data);
-      
+
       console.log("message send!");
-      toast.success("message send✅")
-      reset()
+      toast.success("message send✅");
+      reset();
     },
-    onError:(err:AxiosError<ErrorResponse>)=>{
-      console.log("error while sending msg",err)
-      toast.error("Server error⚠️.msg not send.try it again!")
-    }
-  })
+    onError: (err: AxiosError<ErrorResponse>) => {
+      console.log("error while sending msg", err);
+      toast.error("Server error⚠️.msg not send.try it again!");
+    },
+  });
   const {
     register,
     reset,
@@ -47,10 +50,12 @@ const Contact = () => {
   } = useForm({ resolver: zodResolver(schema) });
   const onSubmit = (data: FormsProps) => {
     console.log(data);
-    const formData = {...data,"access_key":import.meta.env.VITE_PUBLIC_ACCESS_KEY}
-    
-    
-    mutation.mutate(formData)
+    const formData = {
+      ...data,
+      access_key: import.meta.env.VITE_PUBLIC_ACCESS_KEY,
+    };
+
+    mutation.mutate(formData);
   };
   return (
     <div className=" p-2 rounded-2xl max-w-4xl mx-auto pt-4">
@@ -85,7 +90,9 @@ const Contact = () => {
                     {...register("firstName")}
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                   />
-                  <span className="text-sm text-rose-500">{errors.firstName?.message}</span>
+                  <span className="text-sm text-rose-500">
+                    {errors.firstName?.message}
+                  </span>
                 </div>
               </div>
 
@@ -104,7 +111,9 @@ const Contact = () => {
                     {...register("lastName")}
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                   />
-                  <span className="text-sm text-rose-500">{errors.lastName?.message}</span>
+                  <span className="text-sm text-rose-500">
+                    {errors.lastName?.message}
+                  </span>
                 </div>
               </div>
 
@@ -123,8 +132,38 @@ const Contact = () => {
                     {...register("email")}
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 "
                   />
-                  <span className="text-sm text-rose-500">{errors.email?.message}</span>
+                  <span className="text-sm text-rose-500">
+                    {errors.email?.message}
+                  </span>
                 </div>
+              </div>
+
+              <div className="sm:col-span-3">
+                <label
+                  htmlFor="country"
+                  className="block text-sm/6 font-medium text-gray-900"
+                >
+                  Country
+                </label>
+                <div className="mt-2 grid grid-cols-1">
+                  <select
+                    id="country"
+                 
+                    {...register("country")}
+                    autoComplete="country-name"
+                    className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                  >
+                    <option value="">Select a country</option>
+                    <option value="United States">United States</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Mexico">Mexico</option>
+                  </select>
+                  <ChevronDownIcon
+                    aria-hidden="true"
+                    className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                  />
+                </div>
+                <span className="text-sm text-rose-500">{errors.country?.message}</span>
               </div>
 
               <div className="col-span-full">
@@ -142,7 +181,9 @@ const Contact = () => {
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     defaultValue={"This is dummy text for testing"}
                   />
-                  <span className="text-sm text-rose-500">{errors.message?.message}</span>
+                  <span className="text-sm text-rose-500">
+                    {errors.message?.message}
+                  </span>
                 </div>
                 <p className="mt-3 text-sm/6 text-gray-600">
                   Write a few sentences about yourself.
@@ -164,7 +205,7 @@ const Contact = () => {
           </button>
         </div>
       </form>
-      <ToastContainer/>
+      <ToastContainer />
     </div>
   );
 };

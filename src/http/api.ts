@@ -7,6 +7,7 @@ export interface Formsprop {
     email: string;
     message: string;
     access_key: string;
+    country: "United States" | "Canada" | "Mexico";
 }
 const api = axios.create({
     baseURL: import.meta.env.VITE_PUBLIC_BASE_URL,
