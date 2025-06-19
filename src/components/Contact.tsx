@@ -6,6 +6,7 @@ import z from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { postForm } from "../http/api";
 import { ToastContainer, toast } from 'react-toastify'
+import type { AxiosError } from "axios";
 
 export interface FormsProps {
   firstName: string;
@@ -13,7 +14,9 @@ export interface FormsProps {
   email: string;
   message: string;
 }
-
+interface ErrorResponse{
+  message:string
+}
 
 const schema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -28,12 +31,12 @@ const Contact = () => {
       console.log(data);
       
       console.log("message send!");
-      toast.success("message send!")
+      toast.success("message send✅")
       reset()
     },
-    onError:()=>{
-      console.log("error while sending msg")
-      toast.error("msg not send")
+    onError:(err:AxiosError<ErrorResponse>)=>{
+      console.log("error while sending msg",err)
+      toast.error("Server error⚠️.msg not send.try it again!")
     }
   })
   const {
@@ -45,7 +48,7 @@ const Contact = () => {
   const onSubmit = (data: FormsProps) => {
     console.log(data);
     const formData = {...data,"access_key":import.meta.env.VITE_PUBLIC_ACCESS_KEY}
-    console.log("full data",formData);
+    
     
     mutation.mutate(formData)
   };
